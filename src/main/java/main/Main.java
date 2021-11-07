@@ -4,6 +4,12 @@ import java.util.*;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDFont;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+
 public class Main {
     private VocabularyEditor editor;
     private Scanner scan;
@@ -32,7 +38,29 @@ public class Main {
     }
 
     private void endProgrammeOption() throws IOException {
-        System.out.println(this.history.getStatistics());
+        PDDocument document = new PDDocument();
+        PDPage page = new PDPage();
+        document.addPage(page);
+
+        try
+        {
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+            contentStream.beginText();
+            contentStream.setFont(PDType1Font.HELVETICA, 20);
+
+            contentStream.newLineAtOffset(20, page.getMediaBox().getHeight() - 50);
+            contentStream.showText(this.history.getStatistics());
+            contentStream.endText();
+
+            contentStream.close();
+            document.save("historia.pdf");
+            document.close();
+        }
+        catch(IOException ie)
+        {
+            ie.printStackTrace();
+        }
     }
 
     public Main() throws IOException {
